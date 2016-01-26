@@ -4,7 +4,7 @@ set -e
 set -x
 
 SYSLOG_LISTEN_PORT=${SYSLOG_LISTEN_PORT:-5141}
-AMQP_HOST=${AMQP_HOST:-bitscout-qpid-router}
+AMQP_HOST=${AMQP_HOST:-viaq-qpid-router}
 AMQP_PORT=${AMQP_PORT:-5672}
 AMQP_URL=${AMQP_URL:-amqp://$AMQP_HOST:$AMQP_PORT}
 

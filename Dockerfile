@@ -14,7 +14,8 @@ ENV HOME=/opt/app-root/src \
 RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && \
     yum install -y rsyslog rsyslog-gssapi python-qpid-proton \
     rsyslog-mmjsonparse rsyslog-mmsnmptrapd && \
-    yum clean all
+    yum clean all && \
+    rm /etc/rsyslog.d/listen.conf
 
 ADD rsyslog.conf /etc/rsyslog.conf
 ADD rsyslog.d/* /etc/rsyslog.d/

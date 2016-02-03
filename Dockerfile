@@ -13,7 +13,8 @@ RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
     curl https://copr.fedorainfracloud.org/coprs/rmeggins/rsyslog/repo/epel-7/rmeggins-rsyslog-epel-7.repo > /etc/yum.repos.d/rmeggins-rsyslog-epel-7.repo && \
     yum install -y rsyslog rsyslog-gssapi qpid-proton-c \
     rsyslog-mmjsonparse rsyslog-mmsnmptrapd && \
-    yum clean all
+    yum clean all && \
+    rm /etc/rsyslog.d/listen.conf
 
 ADD rsyslog.conf /etc/rsyslog.conf
 ADD rsyslog.d/* /etc/rsyslog.d/

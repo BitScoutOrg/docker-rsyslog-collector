@@ -17,7 +17,7 @@
 
 Summary: Rsyslog AMQP v1 output module
 Name: rsyslog-omamqp1
-Version: 8.15.0
+Version: 8.17.0
 Release: 1%{?dist}
 License: (GPLv3+ and ASL 2.0)
 Group: System Environment/Daemons
@@ -27,7 +27,6 @@ Source1: http://www.rsyslog.com/files/download/rsyslog/rsyslog-doc-%{version}.ta
 Source2: rsyslog.conf
 Source3: rsyslog.sysconfig
 Source4: rsyslog.log
-Source5: rsyslog-omamqp1.tar.gz
 # tweak the upstream service file to honour configuration from /etc/sysconfig/rsyslog
 Patch0: rsyslog-8.8.0-sd-service.patch
 
@@ -39,11 +38,11 @@ BuildRequires: flex
 BuildRequires: libtool
 BuildRequires: libestr-devel >= 0.1.9
 BuildRequires: libee-devel
-BuildRequires: json-c-devel
 BuildRequires: curl-devel
 BuildRequires: libgt-devel
 BuildRequires: python-docutils
 BuildRequires: liblogging-stdlog-devel
+BuildRequires: libfastjson-devel
 %if 0%{?fedora}%{?rhel}>= 7
 # make sure systemd is in a version that isn't affected by rhbz#974132
 BuildRequires: systemd-devel >= 204-8
@@ -155,7 +154,7 @@ Summary: pmciscoios support
 Group: System Environment/Daemons
 Requires: %name = %version-%release
 
-%if 0%{?fedora}0%{?rhel}>= 6
+%if 0%{?fedora}0%{?rhel} >= 6
 %package rsgtutil
 Summary: RSyslog rsgtutil support
 Group: System Environment/Daemons
@@ -187,7 +186,7 @@ BuildRequires: adiscon-librdkafka-devel
 Summary: KSI signature support
 Group: System Environment/Daemons
 Requires: %name = %version-%release
-Requires: libksi <= 3.4.0.0
+Requires: libksi >= 3.4.0.0
 BuildRequires: libksi-devel
 
 %package mmgrok
@@ -369,7 +368,6 @@ This subpackage contains documentation for rsyslog.
 
 %prep
 %setup -q -n rsyslog-%{version}
-%setup -q -n rsyslog-%{version} -T -D -a 5
 %patch0 -p1
 
 autoreconf -iv
@@ -441,18 +439,9 @@ export HIREDIS_LIBS="-L%{_libdir} -lhiredis"
         --enable-omrabbitmq \
         --enable-omstdout \
         --enable-pmcisconames \
-        --enable-pmsnare
+        --enable-pmsnare \
+        --enable-omamqp1
 
-if [ ! -f contrib/omamqp1/Makefile.in ] ; then
-    automake --no-force -i contrib/omamqp1/Makefile.am:contrib/omamqp1/Makefile.in
-fi
-./config.status --file=contrib/omamqp1/Makefile
-PKG_CONFIG=${PKG_CONFIG:-pkg-config}
-PROTON_CFLAGS=`$PKG_CONFIG --cflags "libqpid-proton >= 0.9" 2>/dev/null`
-PROTON_LIBS=`$PKG_CONFIG --libs "libqpid-proton >= 0.9" 2>/dev/null`
-sed -i -e "s/@PROTON_CFLAGS@/${PROTON_CFLAGS}/g" \
-    -e "s/@PROTON_LIBS@/${PROTON_LIBS}/g" \
-    contrib/omamqp1/Makefile
 LD_RUN_PATH=%{_libdir}/rsyslog/qpid-proton-c make -C contrib/omamqp1
 
 %install
@@ -472,5 +461,8 @@ rm -f %{buildroot}%{_libdir}/rsyslog/qpid-proton-c/*.so
 %{_libdir}/rsyslog/qpid-proton-c
 
 %changelog
+* Tue Mar 29 2016 Rich Megginson <rmeggins@redhat.com> 8.17.0-1
+- use omamqp1 included with contrib in rsyslog 8.17
+
 * Mon Feb  1 2016 Rich Megginson <rmeggins@redhat.com> 8.10.0-1
 - initial commit - hacked rsyslog.spec

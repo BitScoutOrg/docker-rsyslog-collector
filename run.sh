@@ -1,7 +1,6 @@
 #!/bin/sh
 
-set -e
-set -x
+set -euxo pipefail
 
 SYSLOG_LISTEN_PORT=${SYSLOG_LISTEN_PORT:-5141}
 AMQP_HOST=${AMQP_HOST:-viaq-qpid-router}
@@ -14,5 +13,4 @@ for file in /etc/rsyslog.conf /etc/rsyslog.d/*.conf ; do
         -e "s/%AMQP_PORT%/$AMQP_PORT/g" \
         "$file"
 done
-/usr/sbin/rsyslogd -n
-#/usr/sbin/rsyslogd -d -n
+/usr/sbin/rsyslogd -n ${DEBUG:+"-d"}
